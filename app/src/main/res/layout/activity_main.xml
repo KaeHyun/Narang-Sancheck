@@ -7,7 +7,7 @@
     tools:context=".MainActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/kakaoMapView"
+        android:id="@+id/MapView"
         android:layout_width="0dp"
         android:layout_height="400dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,7 +27,7 @@
         app:layout_constraintBottom_toTopOf="@id/chronometer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/kakaoMapView" />
+        app:layout_constraintTop_toBottomOf="@+id/MapView" />
 
     <Chronometer
         android:id="@+id/chronometer"
@@ -74,6 +74,44 @@
         app:layout_constraintTop_toBottomOf="@+id/chronometer"
         android:enabled="false"/>
 
+    <ImageButton
+        android:id="@+id/homeButton"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:background="@drawable/btn_action"
+        app:srcCompat="@drawable/outline_home_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintWidth_percent="0.34"
+        android:layout_marginStart="-2dp"
+        android:layout_marginEnd="-4dp"
+        />
+
+    <ImageButton
+        android:id="@+id/storageButton"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        app:srcCompat="@drawable/outline_inbox_24"
+        app:layout_constraintStart_toEndOf="@+id/homeButton"
+        app:layout_constraintEnd_toStartOf="@+id/petButton"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@drawable/btn_action"
+        app:layout_constraintWidth_percent="0.34"
+        android:layout_marginEnd="-2dp"
+        android:layout_marginStart="-2dp"
+        />
+
+    <ImageButton
+        android:id="@+id/petButton"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        app:srcCompat="@drawable/baseline_pets_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@drawable/btn_action"
+        app:layout_constraintWidth_percent="0.34"
+        android:layout_marginStart="-2dp"
+        android:layout_marginEnd="-4dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
