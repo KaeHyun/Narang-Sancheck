@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 //        https://mimisongsong.tistory.com/33
+        //페이지 이동
         val homeButton = findViewById<ImageButton>(R.id.homeButton)
         homeButton.setOnClickListener {
             // 클릭 이벤트에 대한 동작을 여기에 구현합니다.
@@ -34,6 +35,9 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, PetInformationActivity::class.java)
             startActivity(intent)
         }
+
+        //시작 버튼
+        val startButton = findViewById<ImageButton>(R.id.start_button)
 
     }
 }
