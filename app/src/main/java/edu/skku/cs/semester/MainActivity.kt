@@ -1,23 +1,28 @@
 package edu.skku.cs.semester
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.SystemClock
-import android.provider.ContactsContract.CommonDataKinds.Im
 import android.widget.Button
 import android.widget.Chronometer
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.gms.maps.model.PolylineOptions
 import okhttp3.OkHttpClient
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -30,8 +35,27 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var stopBtn: Button
     lateinit var resetBtn: Button
 
-    var running:Boolean = false;
+    var running:Boolean = false
     var pauseTime = 0L //멈춘시간
+
+    private val locationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            updateLocation(location)
+        }
+
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+            // 상태 변경에 대한 동작을 원한다면 구현하세요.
+        }
+
+        override fun onProviderEnabled(provider: String) {
+            // 프로바이더가 활성화되었을 때의 동작을 원한다면 구현하세요.
+        }
+
+        override fun onProviderDisabled(provider: String) {
+            // 프로바이더가 비활성화되었을 때의 동작을 원한다면 구현하세요.
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +92,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val client = OkHttpClient()
         val host = "https://api.weatherapi.com/v1/current.json"
         
-        //현재 위치
+        //처음 위치
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val isLocationEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         if (!isLocationEnabled) {
@@ -78,6 +102,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 10f))
         }
 
+
+
         //시작, 정지, 리셋 버튼 찾기
         startBtn = findViewById(R.id.start_button)
         stopBtn = findViewById(R.id.stop_button)
@@ -85,13 +111,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val endRun = findViewById<Button>(R.id.end_run)
 
 
-        startBtn.isEnabled = true
-        stopBtn.isEnabled = false
-        resetBtn.isEnabled = false
-        running = false
+//        startBtn.isEnabled = true
+//        stopBtn.isEnabled = false
+//        resetBtn.isEnabled = false
+//        running = false
 
         //시작 버튼 누르면, [
         startBtn.setOnClickListener{
+
             //정지 상태일때만 실행
             if(!running)
             {
@@ -104,6 +131,30 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 resetBtn.isEnabled = true
                 running = true
             }
+            // GPS 프로바이더 사용 가능한지 확인
+            val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+            if (isGpsEnabled) {
+                // 위치 업데이트 요청
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+
+                }
+                locationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER,
+                    10000, // 10초마다 업데이트
+                    0f, // 위치 변경 거리 필요 없음
+                    locationListener
+                )
+            } else {
+                Toast.makeText(this, "GPS is not enabled", Toast.LENGTH_SHORT).show()
+            }
+
         }
         //정지 버튼 누르면,
         stopBtn.setOnClickListener {
@@ -154,13 +205,38 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     }
-    
-    
+
+
     //지도
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         val defaultLocation = LatLng(find_lat, find_lon) // Default location: Seoul, Korea
         mMap.addMarker(MarkerOptions().position(defaultLocation).title("Default Location"))
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 10f))
+
     }
+
+    private var previousLocation: LatLng? = null
+    private fun updateLocation(location: Location) {
+        val latitude = location.latitude
+        val longitude = location.longitude
+        val currentLatLng = LatLng(location.latitude, location.longitude)
+
+        // 위치 정보를 활용하여 작업 수행
+        // 현재 위치 좌표 생성
+        // 이전 위치가 null이 아닌 경우에만 선을 그립니다.
+        if (previousLocation != null) {
+            mMap.addPolyline(
+                PolylineOptions()
+                    .add(previousLocation)
+                    .add(currentLatLng)
+                    .width(5f)
+                    .color(Color.RED)
+            )
+        }
+
+        previousLocation = currentLatLng
+
+    }
+
 }
