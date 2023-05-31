@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val petButton = findViewById<ImageButton>(R.id.petButton)
         petButton.setOnClickListener {
-            val intent = Intent(this, PetInformationActivity::class.java)
+            val intent = Intent(this, StorageActivity::class.java)
             startActivity(intent)
         }
 

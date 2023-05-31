@@ -23,7 +23,7 @@ class StorageActivity : Activity() {
         petButton.setOnClickListener {
             // 클릭 이벤트에 대한 동작을 여기에 구현합니다.
             // 예: 버튼이 클릭되었을 때 수행할 작업
-            val intent = Intent(this, PetInformationActivity::class.java)
+            val intent = Intent(this, StorageActivity::class.java)
             startActivity(intent)
         }
 
