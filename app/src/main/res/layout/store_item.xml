@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#CEEEE6">
 
     <ImageView
         android:id="@+id/background"
@@ -36,7 +37,7 @@
         app:layout_constraintEnd_toEndOf="@+id/mapImage"
         app:layout_constraintTop_toTopOf="@+id/background"
         android:layout_marginRight="24dp"
-        android:fontFamily="@font/SSShinb7Regular_otf"
+        android:fontFamily="@font/shinb7regular_otf"
         android:textSize="24sp"
         />
 
@@ -45,13 +46,26 @@
         android:layout_width="270dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
-        android:fontFamily="@font/SSShinb7Regular_otf"
+        android:fontFamily="@font/shinb7regular_otf"
         android:text="TextView"
         android:textSize="28sp"
         app:layout_constraintBottom_toBottomOf="@+id/background"
         app:layout_constraintEnd_toEndOf="@id/background"
         app:layout_constraintStart_toStartOf="@id/background"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+    <ImageView
+        android:id="@+id/frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        app:layout_constraintBottom_toTopOf="@+id/contents"
+        app:layout_constraintEnd_toEndOf="@+id/mapImage"
+        app:layout_constraintStart_toStartOf="@+id/mapImage"
+        app:layout_constraintTop_toBottomOf="@+id/mapImage"
+        android:layout_marginBottom="20dp"
+        app:srcCompat="@drawable/frame" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -77,7 +91,7 @@
             android:layout_height="wrap_content"
             android:text="이럴수가"
             android:textSize="22sp"
-            android:fontFamily="@font/SSShinb7Regular_otf"
+            android:fontFamily="@font/shinb7regular_otf"
             android:layout_gravity="center_vertical"/>
         <ImageView
             android:id="@+id/marker"
@@ -92,7 +106,7 @@
             android:layout_height="wrap_content"
             android:text="이럴수가"
             android:textSize="22sp"
-            android:fontFamily="@font/SSShinb7Regular_otf"
+            android:fontFamily="@font/shinb7regular_otf"
             android:layout_gravity="center_vertical"/>
         <ImageView
             android:id="@+id/howstep"
@@ -107,7 +121,33 @@
             android:layout_height="wrap_content"
             android:text="이럴수가"
             android:textSize="22sp"
-            android:fontFamily="@font/SSShinb7Regular_otf"
+            android:fontFamily="@font/shinb7regular_otf"
             android:layout_gravity="center_vertical"/>
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/postBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/post_btn_click"
+        android:src="@drawable/post"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/cancelBtn"
+        />
+
+    <ImageButton
+        android:id="@+id/cancelBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/cancel_btn_click"
+        android:src="@drawable/cancel"
+        app:layout_constraintStart_toEndOf="@+id/postBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,11 +1,13 @@
 package edu.skku.cs.semester
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.Image
 import android.os.Bundle
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import java.text.SimpleDateFormat
@@ -59,7 +61,26 @@ class EndRunActivity: AppCompatActivity() {
         val stringKm = "$howLong km를 달렸어요."
         kmText.text = stringKm
 
+        val yourMoodEditText = findViewById<EditText>(R.id.yourMood)
 
+        val registerButton = findViewById<ImageButton>(R.id.imageButton2)
+        registerButton.setOnClickListener {
+
+            val intent = Intent(this, StoreItemActivity::class.java)
+            intent.putExtra("date", currentDate)
+            intent.putExtra("hour", timeHour)
+            intent.putExtra("minute", timeMinute)
+            intent.putExtra("steps", stepCount)
+            intent.putExtra("yourMood", yourMoodEditText.text.toString()) // EditText의 입력값을 추가
+            intent.putExtra("walkDistance", howLong)
+            intent.putExtra("imagePath", imagePath)
+
+
+            // Intent를 실행하여 StoreItemActivity로 이동
+            startActivity(intent)
+
+
+        }
 
     }
 
