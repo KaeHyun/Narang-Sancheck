@@ -9,7 +9,7 @@
     <LinearLayout
         android:id="@+id/MapView"
         android:layout_width="0dp"
-        android:layout_height="400dp"
+        android:layout_height="380dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -33,6 +33,7 @@
         android:textColor="@color/black"
         android:textSize="30sp"
         android:textStyle="bold"
+        android:layout_marginTop="5dp"
         app:layout_constraintBottom_toTopOf="@id/chronometer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -83,19 +84,7 @@
         app:layout_constraintTop_toBottomOf="@+id/chronometer"
         />
 
-    <TextView
-        android:id="@+id/health"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:text="건강 정보 "
-        android:textColor="@color/black"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/stop_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-         />
+
 
     <ImageButton
         android:id="@+id/end_run"
@@ -104,7 +93,7 @@
         android:layout_marginTop="15dp"
         android:background="@drawable/end_btn_click"
         android:src="@drawable/end_btn"
-        app:layout_constraintTop_toBottomOf="@id/health"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/storageButton"
@@ -149,9 +138,50 @@
         android:layout_marginStart="-2dp"
         android:layout_marginEnd="-4dp" />
 
+    <ImageView
+        android:id="@+id/step"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        app:layout_constraintBottom_toTopOf="@+id/distance"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginLeft="45dp"
+        android:layout_marginBottom="5dp"
+        app:srcCompat="@drawable/steps" />
 
+    <EditText
+        android:id="@+id/step_value"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-10dp"
+        android:background="@null"
+        android:textSize="25sp"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintBottom_toTopOf="@id/distance_value"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/step"
+        />
 
+    <ImageView
+        android:id="@+id/distance"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        app:layout_constraintBottom_toTopOf="@+id/end_run"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginLeft="45dp"
+        android:layout_marginBottom="5dp"
+        app:srcCompat="@drawable/distance_text" />
 
+    <EditText
+        android:id="@+id/distance_value"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-10dp"
+        android:background="@null"
+        android:textSize="25sp"
+        android:layout_marginBottom="15dp"
+        app:layout_constraintBottom_toTopOf="@id/end_run"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/distance" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

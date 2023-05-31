@@ -1,7 +1,6 @@
 package edu.skku.cs.semester
 
 import android.Manifest
-import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,11 +12,11 @@ import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.SystemClock
-import android.widget.Button
-import android.widget.Chronometer
-import android.widget.ImageButton
-import android.widget.Toast
+import android.util.Log
+import android.widget.*
 import androidx.core.app.ActivityCompat
+import com.google.android.gms.fitness.FitnessOptions
+import com.google.android.gms.fitness.data.DataType
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -25,10 +24,15 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import okhttp3.OkHttpClient
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.fitness.Fitness
+import com.google.android.gms.fitness.data.Field
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import android.os.Handler
+import android.os.Looper
+
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -42,9 +46,20 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     var running:Boolean = false
     var pauseTime = 0L //멈춘시간
-
+    var totalDistance: Float = 0f
+    private lateinit var distanceEditText: EditText
+    private lateinit var stepEditText: EditText
     private val LOCATION_PERMISSION_REQUEST_CODE = 100
+    private val GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = 200
+    private lateinit var fitnessOptions: FitnessOptions
 
+    private val handler = Handler(Looper.getMainLooper())
+    private val updateStepCountRunnable = object : Runnable {
+        override fun run() {
+            updateStepCount() // 발걸음 수 업데이트 함수 호출
+            handler.postDelayed(this, 3000) // 3초마다 실행
+        }
+    }
     private inner class MyLocationListener : LocationListener {
         override fun onLocationChanged(location: Location) {
             if (mMap != null) {
@@ -54,6 +69,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 // 이동 경로 그리기
                 if (running) {
                     drawPolyline(latLng)
+                    updateDistance(latLng)
                 }
 
                 //파란 점 업데이트
@@ -92,7 +108,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        https://mimisongsong.tistory.com/33
         val chronometer: Chronometer = findViewById(R.id.chronometer)
 
         //페이지 이동 버튼
@@ -115,25 +130,20 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             startActivity(intent)
         }
 
-        //지도
+        //fitnessOptions 초기화
+        fitnessOptions = FitnessOptions.builder()
+            .addDataType(DataType.TYPE_DISTANCE_DELTA, FitnessOptions.ACCESS_READ)
+            .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
+            .build()
 
+        stepEditText = findViewById(R.id.step_value)
+
+        //지도
         val mapFragment: SupportMapFragment =
             supportFragmentManager.findFragmentById(R.id.mapview) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        //날씨
-        val client = OkHttpClient()
-        val host = "https://api.weatherapi.com/v1/current.json"
-
-        //처음 위치
-//        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-//        val isLocationEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-//        if (!isLocationEnabled) {
-//            Toast.makeText(this, "위치 서비스가 비활성화 되었습니다!", Toast.LENGTH_SHORT).show()
-//            val defaultLocation = LatLng(find_lat, find_lon) // Default location: Seoul, Korea
-//            mMap.addMarker(MarkerOptions().position(defaultLocation).title("Default Location"))
-//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 10f))
-//        }
+        distanceEditText = findViewById(R.id.distance_value) //초기화
 
         // 위치 업데이트를 위한 LocationManager 설정
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -166,8 +176,22 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 locationListener
             )
         }
+        //Google Fit API 인증 절차 수행
+        val account = GoogleSignIn.getAccountForExtension(this, fitnessOptions)
+        if (!GoogleSignIn.hasPermissions(account, fitnessOptions)) {
+            GoogleSignIn.requestPermissions(
+                this,
+                GOOGLE_FIT_PERMISSIONS_REQUEST_CODE,
+                account,
+                fitnessOptions
+            )
+        } else {
+            // 위치 업데이트 및 이동 거리 계산 로직 실행
+            // 위치 업데이트를 위한 LocationManager 설정 등의 코드를 여기에 추가합니다.
+        }
 
-
+        // onCreate() 메서드 마지막에 다음 코드 추가
+        handler.postDelayed(updateStepCountRunnable, 3000) // 3초마다 실행
         //시작, 정지, 리셋 버튼 찾기
         startBtn = findViewById(R.id.start_button)
         stopBtn = findViewById(R.id.stop_button)
@@ -244,6 +268,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 running = false
                 Toast.makeText(this, "Pause Time: $pauseTime milliseconds", Toast.LENGTH_SHORT).show()
                 chronometer.base = SystemClock.elapsedRealtime()
+
                 pauseTime=0L
             }
             else if(!running)
@@ -262,6 +287,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 intent.putExtra(EndRunActivity.EXTRA_IMAGE_FILE_PATH, imageFile.absolutePath)
                 startActivity(intent)
             }
+
+            //이동한 경로
+            var totalDistanceInKm = totalDistance / 1000f
+            val formattedDistance = String.format("%.2f", totalDistanceInKm)
+            val distanceEditText = findViewById<EditText>(R.id.distance_value)
+            distanceEditText.setText("$formattedDistance km")
         }
 
     }
@@ -281,7 +312,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         return file
     }
-
 
     //지도
     override fun onMapReady(googleMap: GoogleMap) {
@@ -307,6 +337,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun drawPolyline(latLng: LatLng) {
         if (previousLatLng != null) {
+            val distance = calculateDistance(previousLatLng!!, latLng)
+            totalDistance += distance
             val polylineOptions = PolylineOptions()
                 .color(Color.GREEN)
                 .width(5f)
@@ -315,6 +347,43 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             mMap?.addPolyline(polylineOptions)
         }
         previousLatLng = latLng
+    }
+
+    private fun calculateDistance(latLng1: LatLng, latLng2: LatLng): Float {
+        val results = FloatArray(1)
+        Location.distanceBetween(
+            latLng1.latitude, latLng1.longitude,
+            latLng2.latitude, latLng2.longitude,
+            results
+        )
+        return results[0]
+    }
+    private fun updateDistance(latLng: LatLng) {
+        if (previousLatLng != null) {
+            val distance = calculateDistance(previousLatLng!!, latLng)
+            totalDistance += distance
+
+            val totalDistanceInKm = totalDistance / 1000f
+            val formattedDistance = String.format("%.2f", totalDistanceInKm)
+            distanceEditText.setText("$formattedDistance km")
+        }
+        previousLatLng = latLng
+    }
+
+    private fun updateStepCount() {
+        val account = GoogleSignIn.getAccountForExtension(this, fitnessOptions)
+
+        Fitness.getHistoryClient(this, account)
+            .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
+            .addOnSuccessListener { dataSet ->
+                val totalStepCount = if (dataSet.isEmpty) 0 else dataSet.dataPoints[0].getValue(
+                    Field.FIELD_STEPS).asInt()
+                distanceEditText.setText(totalStepCount.toString()) // EditText에 발걸음 수 업데이트
+            }
+            .addOnFailureListener { exception ->
+                // 발걸음 수를 가져오는 데 실패한 경우 처리할 예외 처리 로직을 추가합니다.
+                Log.e("StepCountException", "Failed to retrieve step count", exception) // 예외 발생 시 로그 출력
+            }
     }
 
 
