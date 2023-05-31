@@ -24,6 +24,7 @@
         </activity>
         <activity android:name=".PetInformationActivity" />
         <activity android:name=".StorageActivity" />
+        <activity android:name=".EndRunActivity"/>
 
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>

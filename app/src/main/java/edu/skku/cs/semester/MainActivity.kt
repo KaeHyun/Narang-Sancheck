@@ -1,9 +1,11 @@
 package edu.skku.cs.semester
 
 import android.Manifest
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.location.Location
 import android.location.LocationListener
@@ -24,6 +26,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import okhttp3.OkHttpClient
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -44,21 +49,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         override fun onLocationChanged(location: Location) {
             if (mMap != null) {
                 val latLng = LatLng(location.latitude, location.longitude)
-                mMap!!.addMarker(MarkerOptions().position(latLng).title("Current Location"))
-                mMap!!.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+                //mMap!!.addMarker(MarkerOptions().position(latLng).title("Current Location")
 
                 // 이동 경로 그리기
                 if (running) {
                     drawPolyline(latLng)
                 }
+                mMap!!.moveCamera(CameraUpdateFactory.newLatLng(latLng))
             }
         }
 
         override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
 
-        //override fun onProviderEnabled(provider: String?) {}
+        override fun onProviderEnabled(provider: String) {}
 
-        //override fun onProviderDisabled(provider: String?) {}
+        override fun onProviderDisabled(provider: String) {}
     }
 
 
@@ -98,7 +103,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         //날씨
         val client = OkHttpClient()
         val host = "https://api.weatherapi.com/v1/current.json"
-        
+
         //처음 위치
 //        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 //        val isLocationEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
@@ -222,8 +227,34 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 chronometer.base = SystemClock.elapsedRealtime()
                 pauseTime=0L
             }
+            // 이동 경로 캡쳐
+            mMap?.snapshot { snapshot ->
+                val imageBitmap = snapshot ?: return@snapshot
+
+                val imageFile = saveBitmapToFile(imageBitmap)
+                // EndRunActivity로 화면 전환
+                val intent = Intent(this, EndRunActivity::class.java)
+                intent.putExtra(EndRunActivity.EXTRA_IMAGE_FILE_PATH, imageFile.absolutePath)
+                startActivity(intent)
+            }
         }
 
+    }
+
+    private fun saveBitmapToFile(bitmap: Bitmap): File {
+        val cachePath = File(cacheDir, "images")
+        cachePath.mkdirs()
+
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        val byteArray = stream.toByteArray()
+
+        val file = File(cachePath, "temp_image.png")
+        val fos = FileOutputStream(file)
+        fos.write(byteArray)
+        fos.close()
+
+        return file
     }
 
 
@@ -235,12 +266,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 10f))
 
     }
+    private var previousLatLng: LatLng? = null
+
     private fun drawPolyline(latLng: LatLng) {
-        val polylineOptions = PolylineOptions()
-            .color(Color.BLUE)
-            .width(5f)
-            .add(latLng)
-        mMap?.addPolyline(polylineOptions)
+        if (previousLatLng != null) {
+            val polylineOptions = PolylineOptions()
+                .color(Color.BLACK)
+                .width(5f)
+                .add(previousLatLng)
+                .add(latLng)
+            mMap?.addPolyline(polylineOptions)
+        }
+        previousLatLng = latLng
     }
+
 
 }
