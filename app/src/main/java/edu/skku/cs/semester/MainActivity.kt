@@ -47,8 +47,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     var running:Boolean = false
     var pauseTime = 0L //멈춘시간
     var totalDistance: Float = 0f
-    private lateinit var distanceEditText: EditText
-    private lateinit var stepEditText: EditText
+
+    private lateinit var distanceEditText: TextView
+    private lateinit var stepEditText: TextView
     private val LOCATION_PERMISSION_REQUEST_CODE = 100
     private val GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = 200
     private lateinit var fitnessOptions: FitnessOptions
@@ -258,6 +259,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         endRun.setOnClickListener {
             //산책 끝내기 버튼을 누르면, 상관없이 정지
+
             if(running)
             {
                 chronometer.stop()
@@ -266,18 +268,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 stopBtn.isEnabled = false
                 resetBtn.isEnabled = false
                 running = false
-                Toast.makeText(this, "Pause Time: $pauseTime milliseconds", Toast.LENGTH_SHORT).show()
-                chronometer.base = SystemClock.elapsedRealtime()
 
-                pauseTime=0L
+                chronometer.base = SystemClock.elapsedRealtime()
             }
             else if(!running)
             {
-                Toast.makeText(this, "Pause Time: $pauseTime milliseconds", Toast.LENGTH_SHORT).show()
                 chronometer.base = SystemClock.elapsedRealtime()
-                pauseTime=0L
             }
             // 이동 경로 캡쳐
+            val pauseHour = (pauseTime / (1000 * 60 *60)).toInt()
+            val pauseMinute = ((pauseTime % (1000 * 60 * 60)) / (1000 * 60)).toInt()
+
             mMap?.snapshot { snapshot ->
                 val imageBitmap = snapshot ?: return@snapshot
 
@@ -285,14 +286,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 // EndRunActivity로 화면 전환
                 val intent = Intent(this, EndRunActivity::class.java)
                 intent.putExtra(EndRunActivity.EXTRA_IMAGE_FILE_PATH, imageFile.absolutePath)
+                intent.putExtra(EndRunActivity.EXTRA_PAUSE_TIME_HOURS, pauseHour)
+                intent.putExtra(EndRunActivity.EXTRA_PAUSE_TIME_MINUTES, pauseMinute)
+                intent.putExtra(EndRunActivity.EXTRA_DISTANCE, totalDistance)
+
+
                 startActivity(intent)
+                pauseTime=0L
             }
 
-            //이동한 경로
-            var totalDistanceInKm = totalDistance / 1000f
-            val formattedDistance = String.format("%.2f", totalDistanceInKm)
-            val distanceEditText = findViewById<EditText>(R.id.distance_value)
-            distanceEditText.setText("$formattedDistance km")
         }
 
     }
@@ -365,25 +367,32 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
             val totalDistanceInKm = totalDistance / 1000f
             val formattedDistance = String.format("%.2f", totalDistanceInKm)
-            distanceEditText.setText("$formattedDistance km")
+            distanceEditText.text = "$formattedDistance km"
         }
         previousLatLng = latLng
     }
 
     private fun updateStepCount() {
-        val account = GoogleSignIn.getAccountForExtension(this, fitnessOptions)
+        if (running) {
+            val account = GoogleSignIn.getAccountForExtension(this, fitnessOptions)
+            val mockStepCount = 5000
 
-        Fitness.getHistoryClient(this, account)
-            .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
-            .addOnSuccessListener { dataSet ->
-                val totalStepCount = if (dataSet.isEmpty) 0 else dataSet.dataPoints[0].getValue(
-                    Field.FIELD_STEPS).asInt()
-                stepEditText.setText(totalStepCount.toString() + "걸음") // EditText에 발걸음 수 업데이트
-            }
-            .addOnFailureListener { exception ->
-                // 발걸음 수를 가져오는 데 실패한 경우 처리할 예외 처리 로직을 추가합니다.
-                Log.e("StepCountException", "Failed to retrieve step count", exception) // 예외 발생 시 로그 출력
-            }
+            Fitness.getHistoryClient(this, account)
+                .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
+                .addOnSuccessListener { dataSet ->
+                    val totalStepCount = if (dataSet.isEmpty) 0 else dataSet.dataPoints[0].getValue(
+                        Field.FIELD_STEPS
+                    ).asInt()
+                    stepEditText.setText(mockStepCount.toString() + "걸음")
+                    val intent = Intent(this@MainActivity, EndRunActivity::class.java)
+                    intent.putExtra(EndRunActivity.EXTRA_STEP_COUNT, mockStepCount)
+                    //stepEditText.setText(totalStepCount.toString() + "걸음") // EditText에 발걸음 수 업데이트
+                }
+                .addOnFailureListener { exception ->
+                    // 발걸음 수를 가져오는 데 실패한 경우 처리할 예외 처리 로직을 추가합니다.
+                    Log.e("StepCountException", "Failed to retrieve step count", exception) // 예외 발생 시 로그 출력
+                }
+        }
     }
 
 

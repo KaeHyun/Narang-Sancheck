@@ -20,12 +20,13 @@
 
     <ImageView
         android:id="@+id/route_image"
-        android:layout_width="241dp"
-        android:layout_height="247dp"
-        app:layout_constraintBottom_toTopOf="@id/imageButton2"
+        android:layout_width="258dp"
+        android:layout_height="290dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@id/todayDate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView2"/>
+        app:layout_constraintTop_toBottomOf="@id/textView2" />
 
     <ImageButton
         android:id="@+id/imageButton2"
@@ -38,36 +39,78 @@
         android:src="@drawable/register_button"
         android:layout_marginBottom="15dp"/>
 
-    <EditText
+    <TextView
         android:id="@+id/todayDate"
         android:layout_width="230dp"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="date"
         android:textAlignment="center"
+        android:textSize="18sp"
         android:background="@null"
         app:layout_constraintTop_toBottomOf="@id/route_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/todayMood"/>
+        app:layout_constraintBottom_toTopOf="@id/runtime"/>
+
+    <TextView
+        android:id="@+id/runtime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="x 시간 x 분"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/todayDate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/kilometer"
+        android:layout_margin="3dp"/>
+
+    <TextView
+        android:id="@+id/kilometer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="xxx km"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/runtime"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/step1"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:id="@+id/step1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="xxx 걸음"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/kilometer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/todayMood"
+        android:layout_margin="5dp"/>
 
     <TextView
         android:id="@+id/todayMood"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="오늘의 산책을 요약해주세요 🐶"
-        android:textSize="15dp"
+        android:textSize="22sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/todayDate"
+        app:layout_constraintTop_toBottomOf="@id/step1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/yourMood"/>
+        app:layout_constraintBottom_toTopOf="@id/yourMood"
+        />
 
     <EditText
         android:id="@+id/yourMood"
-        android:layout_width="300dp"
+        android:layout_width="280dp"
         android:layout_height="wrap_content"
         android:text="멍!"
+        android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@id/todayMood"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
