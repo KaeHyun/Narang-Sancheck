@@ -35,7 +35,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:background="@android:color/transparent"
+        android:background="@drawable/register_btn_click"
         android:src="@drawable/register_button"
         android:layout_marginBottom="15dp"/>
 

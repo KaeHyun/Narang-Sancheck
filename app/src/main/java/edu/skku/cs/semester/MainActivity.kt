@@ -119,11 +119,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             Toast.makeText(this, "You are already in main page", Toast.LENGTH_SHORT).show()
         }
 
-        val storeButton = findViewById<ImageButton>(R.id.storageButton)
-        storeButton.setOnClickListener{
-            val intent = Intent(this, StorageActivity::class.java)
-            startActivity(intent)
-        }
 
         val petButton = findViewById<ImageButton>(R.id.petButton)
         petButton.setOnClickListener {
