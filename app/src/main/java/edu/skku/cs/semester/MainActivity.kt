@@ -27,7 +27,7 @@ import okhttp3.OkHttpClient
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private lateinit var mMap: GoogleMap
+    private var mMap: GoogleMap? = null
     var find_lat = 37.5665
     var find_lon = 126.9780
 
@@ -38,23 +38,29 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     var running:Boolean = false
     var pauseTime = 0L //멈춘시간
 
-    private val locationListener = object : LocationListener {
+    private val LOCATION_PERMISSION_REQUEST_CODE = 100
+
+    private inner class MyLocationListener : LocationListener {
         override fun onLocationChanged(location: Location) {
-            updateLocation(location)
+            if (mMap != null) {
+                val latLng = LatLng(location.latitude, location.longitude)
+                mMap!!.addMarker(MarkerOptions().position(latLng).title("Current Location"))
+                mMap!!.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+
+                // 이동 경로 그리기
+                if (running) {
+                    drawPolyline(latLng)
+                }
+            }
         }
 
-        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-            // 상태 변경에 대한 동작을 원한다면 구현하세요.
-        }
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
 
-        override fun onProviderEnabled(provider: String) {
-            // 프로바이더가 활성화되었을 때의 동작을 원한다면 구현하세요.
-        }
+        //override fun onProviderEnabled(provider: String?) {}
 
-        override fun onProviderDisabled(provider: String) {
-            // 프로바이더가 비활성화되었을 때의 동작을 원한다면 구현하세요.
-        }
+        //override fun onProviderDisabled(provider: String?) {}
     }
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +69,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
 //        https://mimisongsong.tistory.com/33
         val chronometer: Chronometer = findViewById(R.id.chronometer)
+
         //페이지 이동 버튼
         val homeButton = findViewById<ImageButton>(R.id.homeButton)
         homeButton.setOnClickListener {
@@ -93,15 +100,45 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val host = "https://api.weatherapi.com/v1/current.json"
         
         //처음 위치
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val isLocationEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        if (!isLocationEnabled) {
-            Toast.makeText(this, "위치 서비스가 비활성화 되었습니다!", Toast.LENGTH_SHORT).show()
-            val defaultLocation = LatLng(find_lat, find_lon) // Default location: Seoul, Korea
-            mMap.addMarker(MarkerOptions().position(defaultLocation).title("Default Location"))
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 10f))
-        }
+//        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+//        val isLocationEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+//        if (!isLocationEnabled) {
+//            Toast.makeText(this, "위치 서비스가 비활성화 되었습니다!", Toast.LENGTH_SHORT).show()
+//            val defaultLocation = LatLng(find_lat, find_lon) // Default location: Seoul, Korea
+//            mMap.addMarker(MarkerOptions().position(defaultLocation).title("Default Location"))
+//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 10f))
+//        }
 
+        // 위치 업데이트를 위한 LocationManager 설정
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationListener = MyLocationListener()
+
+        // 위치 권한 요청
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        } else {
+            // 위치 업데이트 시작
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                10000, // 10초마다 업데이트
+                0f,
+                locationListener
+            )
+        }
 
 
         //시작, 정지, 리셋 버튼 찾기
@@ -111,10 +148,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val endRun = findViewById<Button>(R.id.end_run)
 
 
-//        startBtn.isEnabled = true
-//        stopBtn.isEnabled = false
-//        resetBtn.isEnabled = false
-//        running = false
+        startBtn.isEnabled = true
+        stopBtn.isEnabled = false
+        resetBtn.isEnabled = false
+        running = false
 
         //시작 버튼 누르면, [
         startBtn.setOnClickListener{
@@ -122,39 +159,23 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             //정지 상태일때만 실행
             if(!running)
             {
+                mMap?.clear() // 이동 경로 초기화
                 chronometer.base= SystemClock.elapsedRealtime() - pauseTime
-
                 //시작
                 chronometer.start()
                 startBtn.isEnabled = false
                 stopBtn.isEnabled = true
                 resetBtn.isEnabled = true
                 running = true
-            }
-            // GPS 프로바이더 사용 가능한지 확인
-            val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-            if (isGpsEnabled) {
-                // 위치 업데이트 요청
-                if (ActivityCompat.checkSelfPermission(
-                        this,
-                        android.Manifest.permission.ACCESS_FINE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                        this,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
 
-                }
+                //위치 업데이트 시작
                 locationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER,
-                    10000, // 10초마다 업데이트
-                    0f, // 위치 변경 거리 필요 없음
+                    10000,
+                    0f,
                     locationListener
                 )
-            } else {
-                Toast.makeText(this, "GPS is not enabled", Toast.LENGTH_SHORT).show()
             }
-
         }
         //정지 버튼 누르면,
         stopBtn.setOnClickListener {
@@ -203,7 +224,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
-
     }
 
 
@@ -211,32 +231,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         val defaultLocation = LatLng(find_lat, find_lon) // Default location: Seoul, Korea
-        mMap.addMarker(MarkerOptions().position(defaultLocation).title("Default Location"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 10f))
+        mMap?.addMarker(MarkerOptions().position(defaultLocation).title("Default Location"))
+        mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 10f))
 
     }
-
-    private var previousLocation: LatLng? = null
-    private fun updateLocation(location: Location) {
-        val latitude = location.latitude
-        val longitude = location.longitude
-        val currentLatLng = LatLng(location.latitude, location.longitude)
-
-        // 위치 정보를 활용하여 작업 수행
-        // 현재 위치 좌표 생성
-        // 이전 위치가 null이 아닌 경우에만 선을 그립니다.
-        if (previousLocation != null) {
-            mMap.addPolyline(
-                PolylineOptions()
-                    .add(previousLocation)
-                    .add(currentLatLng)
-                    .width(5f)
-                    .color(Color.RED)
-            )
-        }
-
-        previousLocation = currentLatLng
-
+    private fun drawPolyline(latLng: LatLng) {
+        val polylineOptions = PolylineOptions()
+            .color(Color.BLUE)
+            .width(5f)
+            .add(latLng)
+        mMap?.addPolyline(polylineOptions)
     }
 
 }
