@@ -36,9 +36,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     var find_lat = 37.5665
     var find_lon = 126.9780
 
-    lateinit var startBtn: Button
-    lateinit var stopBtn: Button
-    lateinit var resetBtn: Button
+    lateinit var startBtn: ImageButton
+    lateinit var stopBtn: ImageButton
+    lateinit var resetBtn: ImageButton
 
     var running:Boolean = false
     var pauseTime = 0L //멈춘시간
@@ -55,6 +55,26 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (running) {
                     drawPolyline(latLng)
                 }
+
+                //파란 점 업데이트
+                if (ActivityCompat.checkSelfPermission(
+                        this@MainActivity,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        this@MainActivity,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return
+                }
+                mMap?.isMyLocationEnabled = true
                 mMap!!.moveCamera(CameraUpdateFactory.newLatLng(latLng))
             }
         }
@@ -96,6 +116,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         //지도
+
         val mapFragment: SupportMapFragment =
             supportFragmentManager.findFragmentById(R.id.mapview) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -137,6 +158,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             )
         } else {
             // 위치 업데이트 시작
+
             locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
                 10000, // 10초마다 업데이트
@@ -150,7 +172,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         startBtn = findViewById(R.id.start_button)
         stopBtn = findViewById(R.id.stop_button)
         resetBtn = findViewById(R.id.reset_button)
-        val endRun = findViewById<Button>(R.id.end_run)
+        val endRun = findViewById<ImageButton>(R.id.end_run)
 
 
         startBtn.isEnabled = true
@@ -205,6 +227,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             stopBtn.isEnabled = false
             resetBtn.isEnabled = false
             running = false
+
+            mMap?.clear()
+            previousLatLng = null
         }
 
         endRun.setOnClickListener {
@@ -265,13 +290,25 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap?.addMarker(MarkerOptions().position(defaultLocation).title("Default Location"))
         mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 10f))
 
+        // 현재 위치 표시 활성화
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+        }
+        mMap?.isMyLocationEnabled = true
+
     }
     private var previousLatLng: LatLng? = null
 
     private fun drawPolyline(latLng: LatLng) {
         if (previousLatLng != null) {
             val polylineOptions = PolylineOptions()
-                .color(Color.BLACK)
+                .color(Color.GREEN)
                 .width(5f)
                 .add(previousLatLng)
                 .add(latLng)
