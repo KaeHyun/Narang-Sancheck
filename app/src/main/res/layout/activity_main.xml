@@ -77,14 +77,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:background="@drawable/reset_btn_click"
         android:src="@drawable/reset_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/stop_button"
         app:layout_constraintTop_toBottomOf="@+id/chronometer"
         />
-
-
 
     <ImageButton
         android:id="@+id/end_run"
@@ -93,7 +92,7 @@
         android:layout_marginTop="15dp"
         android:background="@drawable/end_btn_click"
         android:src="@drawable/end_btn"
-
+        android:layout_marginBottom="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/storageButton"
@@ -142,10 +141,11 @@
         android:id="@+id/step"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        app:layout_constraintBottom_toTopOf="@+id/distance"
-        app:layout_constraintStart_toStartOf="parent"
         android:layout_marginLeft="45dp"
         android:layout_marginBottom="5dp"
+        app:layout_constraintBottom_toTopOf="@+id/distance"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/start_button"
         app:srcCompat="@drawable/steps" />
 
     <EditText
@@ -153,13 +153,14 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="-10dp"
+        android:layout_marginBottom="5dp"
         android:background="@null"
         android:textSize="25sp"
-        android:layout_marginBottom="5dp"
+        android:text="0 걸음"
         app:layout_constraintBottom_toTopOf="@id/distance_value"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/step"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/reset_button" />
 
     <ImageView
         android:id="@+id/distance"
@@ -178,6 +179,7 @@
         android:layout_marginStart="-10dp"
         android:background="@null"
         android:textSize="25sp"
+        android:text="0.0 km"
         android:layout_marginBottom="15dp"
         app:layout_constraintBottom_toTopOf="@id/end_run"
         app:layout_constraintEnd_toEndOf="parent"

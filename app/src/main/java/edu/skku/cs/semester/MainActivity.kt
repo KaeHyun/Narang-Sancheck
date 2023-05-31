@@ -378,7 +378,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             .addOnSuccessListener { dataSet ->
                 val totalStepCount = if (dataSet.isEmpty) 0 else dataSet.dataPoints[0].getValue(
                     Field.FIELD_STEPS).asInt()
-                distanceEditText.setText(totalStepCount.toString()) // EditText에 발걸음 수 업데이트
+                stepEditText.setText(totalStepCount.toString() + "걸음") // EditText에 발걸음 수 업데이트
             }
             .addOnFailureListener { exception ->
                 // 발걸음 수를 가져오는 데 실패한 경우 처리할 예외 처리 로직을 추가합니다.
