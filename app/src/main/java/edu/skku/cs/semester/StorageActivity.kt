@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 
-class StorageActivity : AppCompatActivity() {
+class StorageActivity : AppCompatActivity(), FeedAdapter.OnItemDeleteListener {
 
     // FeedItem 클래스 정의
     data class FeedItem(
@@ -24,6 +24,9 @@ class StorageActivity : AppCompatActivity() {
         val summary: String?,
     )
 
+    private lateinit var adapter: FeedAdapter
+    private lateinit var feedItems: MutableList<FeedItem>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // PetInformationActivity의 동작 및 레이아웃 설정 등을 추가해주세요.
@@ -32,19 +35,17 @@ class StorageActivity : AppCompatActivity() {
 
         val homeButton = findViewById<ImageButton>(R.id.homeButton2)
         homeButton.setOnClickListener {
-            // 클릭 이벤트에 대한 동작을 여기에 구현합니다.
-            // 예: 버튼이 클릭되었을 때 수행할 작업
+
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
         val petButton = findViewById<ImageButton>(R.id.petButton2)
         petButton.setOnClickListener {
-            // 클릭 이벤트에 대한 동작을 여기에 구현합니다.
-            // 예: 버튼이 클릭되었을 때 수행할 작업
             val intent = Intent(this, StorageActivity::class.java)
             startActivity(intent)
         }
 
+        feedItems = getAllFeedItems() as MutableList<FeedItem>
 
         // RecyclerView 초기화
         val feedRecyclerView = findViewById<RecyclerView>(R.id.showRecycleView)
@@ -55,11 +56,39 @@ class StorageActivity : AppCompatActivity() {
         val feedItems = getAllFeedItems() // 모든 피드 항목을 가져오는 함수 호출
 
         // 어댑터 생성 및 설정
-        val adapter = FeedAdapter(feedItems)
+        adapter = FeedAdapter(feedItems)
+
+        adapter.setOnItemDeleteListener(this) // 삭제 이벤트 리스너 설정
+
         feedRecyclerView.adapter = adapter
 
     }
 
+    override fun onItemDeleteConfirmed(position: Int) {
+        val dbHelper = MyDatabaseHelper(this)
+        val db = dbHelper.writableDatabase
+
+        // 삭제할 아이템의 정보 가져오기
+        val item = feedItems[position]
+
+        // 데이터베이스에서 해당 아이템 삭제
+        val selection = "${MyDatabaseHelper.COLUMN_DATE} = ? AND " +
+                "${MyDatabaseHelper.COLUMN_HOUR} = ? AND " +
+                "${MyDatabaseHelper.COLUMN_MINUTE} = ?"
+        val selectionArgs = arrayOf(item.date, item.hour.toString(), item.minute.toString())
+        db.delete(MyDatabaseHelper.TABLE_NAME, selection, selectionArgs)
+
+        db.close()
+
+        // 어댑터에서 삭제된 아이템 제거
+        feedItems.removeAt(position)
+        adapter.notifyItemRemoved(position)
+    }
+
+    override fun onItemDeleteCanceled() {
+        // 아이템 삭제 취소 시 필요한 동작 수행
+        // 예: 다이얼로그 닫기 등
+    }
     private fun getAllFeedItems(): List<FeedItem> {
         val feedItems = mutableListOf<FeedItem>()
 
@@ -106,5 +135,7 @@ class StorageActivity : AppCompatActivity() {
 
         return feedItems
     }
+
+
 }
 

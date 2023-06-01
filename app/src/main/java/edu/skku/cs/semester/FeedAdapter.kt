@@ -1,5 +1,6 @@
 package edu.skku.cs.semester
 
+import android.app.AlertDialog
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 
 class FeedAdapter(private val feedItems: List<StorageActivity.FeedItem>) : RecyclerView.Adapter<FeedAdapter.FeedViewHolder>() {
+
+    private var deleteListener: OnItemDeleteListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.store_item, parent, false)
@@ -24,6 +27,11 @@ class FeedAdapter(private val feedItems: List<StorageActivity.FeedItem>) : Recyc
     override fun getItemCount(): Int {
         return feedItems.size
     }
+
+    fun setOnItemDeleteListener(listener: OnItemDeleteListener) {
+        deleteListener = listener
+    }
+
 
     inner class FeedViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -55,7 +63,30 @@ class FeedAdapter(private val feedItems: List<StorageActivity.FeedItem>) : Recyc
             val summary = itemView.findViewById<TextView>(R.id.contents)
             summary.text = feedItem.summary
 
+            // 아이템 클릭 시 다이얼로그 띄우기
+            itemView.setOnClickListener {
+                showDeleteDialog(adapterPosition)
+            }
 
         }
+        private fun showDeleteDialog(position: Int) {
+            val alertDialog = AlertDialog.Builder(itemView.context)
+                .setTitle("Delete Item")
+                .setMessage("정말 삭제하시겠습니까?")
+                .setPositiveButton("삭제") { _, _ ->
+                    deleteListener?.onItemDeleteConfirmed(position)
+                }
+                .setNegativeButton("취소") { _, _ ->
+                    deleteListener?.onItemDeleteCanceled()
+                }
+                .create()
+            alertDialog.show()
+        }
     }
+    interface OnItemDeleteListener {
+        fun onItemDeleteConfirmed(position: Int)
+        fun onItemDeleteCanceled()
+    }
+
+
 }
