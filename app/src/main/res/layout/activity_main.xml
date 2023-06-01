@@ -50,14 +50,14 @@
         app:layout_constraintTop_toBottomOf="@+id/textView"
         android:fontFamily="@font/shinb7regular_otf"/>
 
+
     <ImageButton
         android:id="@+id/start_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/start_btn_click"
         android:src="@drawable/start_button"
-        android:layout_marginTop="15dp"
-        android:layout_marginLeft="5dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toStartOf="@+id/stop_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chronometer" />
@@ -67,7 +67,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/stop_btn_click"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="10dp"
         android:src="@drawable/pause_button"
         app:layout_constraintEnd_toStartOf="@+id/reset_button"
         app:layout_constraintStart_toEndOf="@+id/start_button"
@@ -77,15 +77,15 @@
         android:id="@+id/reset_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginLeft="5dp"
+        android:layout_marginTop="10dp"
         android:layout_marginRight="5dp"
         android:background="@drawable/reset_btn_click"
         android:src="@drawable/reset_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/stop_button"
-        app:layout_constraintTop_toBottomOf="@+id/chronometer"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/chronometer" />
+
+
 
     <ImageButton
         android:id="@+id/end_run"
@@ -100,11 +100,14 @@
         app:layout_constraintBottom_toTopOf="@id/homeButton"
         />
 
+
+
     <ImageButton
         android:id="@+id/homeButton"
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:background="@drawable/btn_action"
+        android:layout_marginLeft="5dp"
         app:srcCompat="@drawable/outline_home_36"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

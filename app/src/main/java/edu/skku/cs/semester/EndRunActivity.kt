@@ -18,8 +18,8 @@ import java.util.*
 class EndRunActivity: AppCompatActivity() {
     companion object {
         const val EXTRA_IMAGE_FILE_PATH = "extra_image_file_path"
-        const val EXTRA_PAUSE_TIME_HOURS = "extra_pause_time_hours"
         const val EXTRA_PAUSE_TIME_MINUTES = "extra_pause_time_minutes"
+        const val EXTRA_PAUSE_TIME_SECONDS = "extra_pause_time_seconds"
         const val EXTRA_STEP_COUNT = "step_count"
         const val EXTRA_DISTANCE = "extra_distance"
     }
@@ -42,11 +42,11 @@ class EndRunActivity: AppCompatActivity() {
         todayDateEditText.text = currentDate//현재 날짜 표시
 
         //전달받은 시간, 분 값 가져오기
-        val timeHour = intent.getIntExtra(EXTRA_PAUSE_TIME_HOURS,0)
-        val timeMinute = intent.getIntExtra(EXTRA_PAUSE_TIME_MINUTES, 0)
+        val timeMinute = intent.getIntExtra(EXTRA_PAUSE_TIME_MINUTES,0)
+        val timeSecond = intent.getIntExtra(EXTRA_PAUSE_TIME_SECONDS, 0)
 
         val runTime = findViewById<TextView>(R.id.runtime)
-        val stringRuntime = "$timeHour 시간 $timeMinute 분 동안 함께했어요."
+        val stringRuntime = "$timeMinute 분 $timeSecond 초 동안 함께 했어요."
         runTime.text = stringRuntime
 
         //걸음 수 가져오기
@@ -72,8 +72,8 @@ class EndRunActivity: AppCompatActivity() {
 
             val intent = Intent(this, StoreItemActivity::class.java)
             intent.putExtra("date", currentDate)
-            intent.putExtra("hour", timeHour)
             intent.putExtra("minute", timeMinute)
+            intent.putExtra("second", timeSecond)
             intent.putExtra("steps", stepCount)
             intent.putExtra("yourMood", yourMoodEditText.text.toString()) // EditText의 입력값을 추가
             intent.putExtra("walkDistance", howLong)
@@ -82,8 +82,6 @@ class EndRunActivity: AppCompatActivity() {
 
             // Intent를 실행하여 StoreItemActivity로 이동
             startActivity(intent)
-
-
         }
 
     }

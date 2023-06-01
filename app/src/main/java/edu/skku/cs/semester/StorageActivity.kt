@@ -16,8 +16,8 @@ class StorageActivity : AppCompatActivity(), FeedAdapter.OnItemDeleteListener {
     // FeedItem 클래스 정의
     data class FeedItem(
         val date: String?,
-        val hour: Int,
         val minute: Int,
+        val second: Int,
         val steps: Int,
         val walks: Float,
         val imagePath: String?,
@@ -41,6 +41,9 @@ class StorageActivity : AppCompatActivity(), FeedAdapter.OnItemDeleteListener {
         }
         val petButton = findViewById<ImageButton>(R.id.petButton2)
         petButton.setOnClickListener {
+            feedItems = getAllFeedItems() as MutableList<FeedItem>
+            adapter.notifyDataSetChanged()
+
             val intent = Intent(this, StorageActivity::class.java)
             startActivity(intent)
         }
@@ -52,8 +55,6 @@ class StorageActivity : AppCompatActivity(), FeedAdapter.OnItemDeleteListener {
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         feedRecyclerView.layoutManager = layoutManager
 
-
-        val feedItems = getAllFeedItems() // 모든 피드 항목을 가져오는 함수 호출
 
         // 어댑터 생성 및 설정
         adapter = FeedAdapter(feedItems)
@@ -73,9 +74,9 @@ class StorageActivity : AppCompatActivity(), FeedAdapter.OnItemDeleteListener {
 
         // 데이터베이스에서 해당 아이템 삭제
         val selection = "${MyDatabaseHelper.COLUMN_DATE} = ? AND " +
-                "${MyDatabaseHelper.COLUMN_HOUR} = ? AND " +
-                "${MyDatabaseHelper.COLUMN_MINUTE} = ?"
-        val selectionArgs = arrayOf(item.date, item.hour.toString(), item.minute.toString())
+                "${MyDatabaseHelper.COLUMN_MINUTE} = ? AND " +
+                "${MyDatabaseHelper.COLUMN_SECOND} = ?"
+        val selectionArgs = arrayOf(item.date, item.minute.toString(), item.second.toString())
         db.delete(MyDatabaseHelper.TABLE_NAME, selection, selectionArgs)
 
         db.close()
@@ -97,8 +98,8 @@ class StorageActivity : AppCompatActivity(), FeedAdapter.OnItemDeleteListener {
         val db = dbHelper.readableDatabase
         val projection = arrayOf(
             MyDatabaseHelper.COLUMN_DATE,
-            MyDatabaseHelper.COLUMN_HOUR,
             MyDatabaseHelper.COLUMN_MINUTE,
+            MyDatabaseHelper.COLUMN_SECOND,
             MyDatabaseHelper.COLUMN_STEPS,
             MyDatabaseHelper.COLUMN_WALK_DISTANCE,
             MyDatabaseHelper.COLUMN_IMAGE_PATH,
@@ -118,14 +119,14 @@ class StorageActivity : AppCompatActivity(), FeedAdapter.OnItemDeleteListener {
         with(cursor) {
             while (moveToNext()) {
                 val date = getString(getColumnIndexOrThrow(MyDatabaseHelper.COLUMN_DATE))
-                val hour = getInt(getColumnIndexOrThrow(MyDatabaseHelper.COLUMN_HOUR))
                 val minute = getInt(getColumnIndexOrThrow(MyDatabaseHelper.COLUMN_MINUTE))
+                val second = getInt(getColumnIndexOrThrow(MyDatabaseHelper.COLUMN_SECOND))
                 val steps = getInt(getColumnIndexOrThrow(MyDatabaseHelper.COLUMN_STEPS))
                 val walks = getFloat(getColumnIndexOrThrow(MyDatabaseHelper.COLUMN_WALK_DISTANCE))
                 val imagePath = getString(getColumnIndexOrThrow(MyDatabaseHelper.COLUMN_IMAGE_PATH))
                 val summary = getString(getColumnIndexOrThrow(MyDatabaseHelper.COLUMN_MOOD))
 
-                val feedItem = FeedItem(date, hour, minute, steps, walks, imagePath, summary)
+                val feedItem = FeedItem(date, minute, second, steps, walks, imagePath, summary)
                 feedItems.add(feedItem)
             }
         }

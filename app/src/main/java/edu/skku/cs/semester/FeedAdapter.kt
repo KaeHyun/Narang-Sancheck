@@ -49,15 +49,16 @@ class FeedAdapter(private val feedItems: List<StorageActivity.FeedItem>) : Recyc
             }
 
             val timeSpend = itemView.findViewById<TextView>(R.id.timespent)
-            val timeString = "${feedItem.hour} : ${feedItem.minute}"
+            val timeString = "${feedItem.minute} : ${feedItem.second}"
             timeSpend.text = timeString
 
             val distance = itemView.findViewById<TextView>(R.id.distance)
-            val distanceString = "${feedItem.walks} km"
+            val formattedDistance = String.format("%.2f", feedItem.walks)
+            val distanceString = "${formattedDistance} km"
             distance.text = distanceString
 
             val walk = itemView.findViewById<TextView>(R.id.steps)
-            val walkString = "${feedItem.walks} 걸음"
+            val walkString = "${feedItem.steps} 걸음"
             walk.text = walkString
 
             val summary = itemView.findViewById<TextView>(R.id.contents)

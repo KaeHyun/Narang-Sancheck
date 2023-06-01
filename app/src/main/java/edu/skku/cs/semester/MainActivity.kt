@@ -54,6 +54,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private val GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = 200
     private lateinit var fitnessOptions: FitnessOptions
 
+    private var stepCountAtStart = 0
+    private var currentStepCount = 0
+
     private val handler = Handler(Looper.getMainLooper())
     private val updateStepCountRunnable = object : Runnable {
         override fun run() {
@@ -199,13 +202,36 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         stopBtn.isEnabled = false
         resetBtn.isEnabled = false
         running = false
+        var pause_pressed: Boolean = false
+        var reset_pressed: Boolean = false
 
         //시작 버튼 누르면, [
-        startBtn.setOnClickListener{
+        startBtn.setOnClickListener {
 
-            //정지 상태일때만 실행
-            if(!running)
+            if (!running && pause_pressed) {
+                //startBtn이 눌렸고 pause가 눌린적 있다면
+                pause_pressed = false
+                chronometer.base = SystemClock.elapsedRealtime() - pauseTime
+                //시작
+                chronometer.start()
+                startBtn.isEnabled = false
+                stopBtn.isEnabled = true
+                resetBtn.isEnabled = true
+                running = true
+
+                //위치 업데이트 시작
+                locationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER,
+                    10000,
+                    0f,
+                    locationListener
+                )
+            }
+
+            if (!running && reset_pressed)
             {
+                reset_pressed=false
+                //달리는 중이고 reset 버튼이 눌렸다면
                 mMap?.clear() // 이동 경로 초기화
                 chronometer.base= SystemClock.elapsedRealtime() - pauseTime
                 //시작
@@ -222,7 +248,56 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     0f,
                     locationListener
                 )
+                // 걸음 수 초기화
+                val account = GoogleSignIn.getAccountForExtension(this, fitnessOptions)
+                Fitness.getHistoryClient(this, account)
+                    .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
+                    .addOnSuccessListener { dataSet ->
+                        stepCountAtStart = if (dataSet.isEmpty) 0 else dataSet.dataPoints[0].getValue(
+                            Field.FIELD_STEPS
+                        ).asInt()
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e("StepCountException", "Failed to retrieve step count", exception)
+                    }
             }
+
+            //정지 상태일때만 실행
+            if(!running && !pause_pressed &&!reset_pressed)
+            {
+                //달리는 중이고 pause가 눌린적 없고 reset도 눌린적 없다면
+                mMap?.clear() // 이동 경로 초기화
+                chronometer.base= SystemClock.elapsedRealtime() - pauseTime
+                //시작
+                chronometer.start()
+                startBtn.isEnabled = false
+                stopBtn.isEnabled = true
+                resetBtn.isEnabled = true
+                running = true
+
+                //위치 업데이트 시작
+                locationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER,
+                    10000,
+                    0f,
+                    locationListener
+                )
+                // 걸음 수 초기화
+                val account = GoogleSignIn.getAccountForExtension(this, fitnessOptions)
+                Fitness.getHistoryClient(this, account)
+                    .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
+                    .addOnSuccessListener { dataSet ->
+                        stepCountAtStart = if (dataSet.isEmpty) 0 else dataSet.dataPoints[0].getValue(
+                            Field.FIELD_STEPS
+                        ).asInt()
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e("StepCountException", "Failed to retrieve step count", exception)
+                    }
+
+            }
+            // 걸음 수 업데이트 함수 호출
+            updateStepCount()
         }
         //정지 버튼 누르면,
         stopBtn.setOnClickListener {
@@ -234,11 +309,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 stopBtn.isEnabled = false
                 resetBtn.isEnabled = true
                 running = false
+                // 걸음 수 초기화하지 않고 이전 값 유지
+                stepEditText.text = "${currentStepCount - stepCountAtStart} 걸음"
+                pause_pressed=true
             }
         }
 
         //리셋 버튼 누르면,
         resetBtn.setOnClickListener {
+
+            reset_pressed=true
             chronometer.base = SystemClock.elapsedRealtime()
 
             pauseTime=0L
@@ -250,6 +330,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
             mMap?.clear()
             previousLatLng = null
+            totalDistance = 0f
+            distanceEditText.text = "0.0 km"
+            stepEditText.text = "0 걸음"
         }
 
         endRun.setOnClickListener {
@@ -271,8 +354,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 chronometer.base = SystemClock.elapsedRealtime()
             }
             // 이동 경로 캡쳐
-            val pauseHour = (pauseTime / (1000 * 60 *60)).toInt()
-            val pauseMinute = ((pauseTime % (1000 * 60 * 60)) / (1000 * 60)).toInt()
+            val pauseMinute = (pauseTime / (1000 * 60)).toInt()
+            val pauseSecond = (pauseTime / 1000).toInt()
 
             mMap?.snapshot { snapshot ->
                 val imageBitmap = snapshot ?: return@snapshot
@@ -281,10 +364,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 // EndRunActivity로 화면 전환
                 val intent = Intent(this, EndRunActivity::class.java)
                 intent.putExtra(EndRunActivity.EXTRA_IMAGE_FILE_PATH, imageFile.absolutePath)
-                intent.putExtra(EndRunActivity.EXTRA_PAUSE_TIME_HOURS, pauseHour)
                 intent.putExtra(EndRunActivity.EXTRA_PAUSE_TIME_MINUTES, pauseMinute)
+                intent.putExtra(EndRunActivity.EXTRA_PAUSE_TIME_SECONDS, pauseSecond)
                 intent.putExtra(EndRunActivity.EXTRA_DISTANCE, totalDistance)
                 Log.d("메인 액티비티에서!!!!!", totalDistance.toString())
+                intent.putExtra(EndRunActivity.EXTRA_STEP_COUNT, currentStepCount - stepCountAtStart)
                 startActivity(intent)
                 pauseTime=0L
             }
@@ -369,25 +453,20 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun updateStepCount() {
         if (running) {
             val account = GoogleSignIn.getAccountForExtension(this, fitnessOptions)
-            val mockStepCount = 5000
-
             Fitness.getHistoryClient(this, account)
                 .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
                 .addOnSuccessListener { dataSet ->
-                    val totalStepCount = if (dataSet.isEmpty) 0 else dataSet.dataPoints[0].getValue(
+                    currentStepCount = if (dataSet.isEmpty) 0 else dataSet.dataPoints[0].getValue(
                         Field.FIELD_STEPS
                     ).asInt()
-                    stepEditText.setText(totalStepCount.toString() + "걸음")
-                    val intent = Intent(this@MainActivity, EndRunActivity::class.java)
-                    intent.putExtra(EndRunActivity.EXTRA_STEP_COUNT, totalStepCount)
-                    //stepEditText.setText(totalStepCount.toString() + "걸음") // EditText에 발걸음 수 업데이트
+
+                    val stepCount = currentStepCount - stepCountAtStart
+                    stepEditText.text = "$stepCount 걸음"
                 }
                 .addOnFailureListener { exception ->
-                    // 발걸음 수를 가져오는 데 실패한 경우 처리할 예외 처리 로직을 추가합니다.
-                    Log.e("StepCountException", "Failed to retrieve step count", exception) // 예외 발생 시 로그 출력
+                    Log.e("StepCountException", "Failed to retrieve step count", exception)
                 }
         }
     }
-
 
 }

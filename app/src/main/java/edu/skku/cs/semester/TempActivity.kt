@@ -2,6 +2,7 @@ package edu.skku.cs.semester
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -15,8 +16,8 @@ class TempActivity: AppCompatActivity() {
 
         // Intent로 전달된 데이터 받기
         val date = intent.getStringExtra("date")
-        val hour = intent.getIntExtra("hour", 0)
         val minute = intent.getIntExtra("minute", 0)
+        val second = intent.getIntExtra("second", 0)
         val steps = intent.getIntExtra("steps", 0)
         val walks = intent.getFloatExtra("walkDistance", 0f)
         val imagePath = intent.getStringExtra("imagePath")
@@ -30,10 +31,11 @@ class TempActivity: AppCompatActivity() {
         var showdate = findViewById<TextView>(R.id.showdate)
         showdate.text = date.toString()
         var time = findViewById<TextView>(R.id.timespent)
-        time.text = "$hour : $minute"
+        time.text = "$minute m $second s"
 
         var dist = findViewById<TextView>(R.id.distance)
         val formattedDistance = String.format("%.2f", walks)
+        Log.d("Temp Activity 쪽 문제인가!! ", formattedDistance)
         dist.text = "$formattedDistance km"
 
         var count = findViewById<TextView>(R.id.steps)

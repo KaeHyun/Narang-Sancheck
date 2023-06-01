@@ -25,8 +25,8 @@ class StoreItemActivity: AppCompatActivity() {
 
         // Intent로 전달된 데이터 받기
         val date = intent.getStringExtra("date")
-        val hour= intent.getIntExtra("hour", 0)
-        val minute = intent.getIntExtra("minute", 0)
+        val minute= intent.getIntExtra("minute", 0)
+        val second = intent.getIntExtra("second", 0)
         val steps  = intent.getIntExtra("steps", 0)
         var walks = intent.getFloatExtra("walkDistance", 0f)
         val imagePath = intent.getStringExtra("imagePath")
@@ -40,7 +40,7 @@ class StoreItemActivity: AppCompatActivity() {
         var showdate = findViewById<TextView>(R.id.showdate)
         showdate.text = date.toString()
         var time = findViewById<TextView>(R.id.timespent)
-        time.text = "$hour : $minute"
+        time.text = "$minute m $second s"
 
         var dist = findViewById<TextView>(R.id.distance)
         val formattedDistance = String.format("%.2f", walks)
@@ -60,8 +60,8 @@ class StoreItemActivity: AppCompatActivity() {
             val intent = Intent(this, StorageActivity::class.java)
 
             intent.putExtra("date", date)
-            intent.putExtra("hour", hour)
             intent.putExtra("minute", minute)
+            intent.putExtra("second", second)
             intent.putExtra("steps", steps)
             intent.putExtra("yourMood", summary.toString()) // EditText의 입력값을 추가
             intent.putExtra("walkDistance", walks)
@@ -76,8 +76,8 @@ class StoreItemActivity: AppCompatActivity() {
             // ContentValues 객체를 생성하여 데이터 저장
             val values = ContentValues().apply {
                 put(MyDatabaseHelper.COLUMN_DATE, date)
-                put(MyDatabaseHelper.COLUMN_HOUR, hour)
                 put(MyDatabaseHelper.COLUMN_MINUTE, minute)
+                put(MyDatabaseHelper.COLUMN_SECOND, second)
                 put(MyDatabaseHelper.COLUMN_STEPS, steps)
                 put(MyDatabaseHelper.COLUMN_WALK_DISTANCE, walks)
                 put(MyDatabaseHelper.COLUMN_IMAGE_PATH, imagePath)
@@ -96,8 +96,8 @@ class StoreItemActivity: AppCompatActivity() {
             val tempIntent = Intent(this, TempActivity::class.java)
             // 데이터 전달을 위한 putExtra() 호출
             tempIntent.putExtra("date", date)
-            tempIntent.putExtra("hour", hour)
             tempIntent.putExtra("minute", minute)
+            tempIntent.putExtra("second", second)
             tempIntent.putExtra("steps", steps)
             tempIntent.putExtra("yourMood", summary.toString())
             tempIntent.putExtra("walkDistance", walks)
