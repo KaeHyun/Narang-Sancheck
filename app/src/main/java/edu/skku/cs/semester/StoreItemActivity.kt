@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ListView
@@ -27,7 +28,7 @@ class StoreItemActivity: AppCompatActivity() {
         val hour= intent.getIntExtra("hour", 0)
         val minute = intent.getIntExtra("minute", 0)
         val steps  = intent.getIntExtra("steps", 0)
-        val walks = intent.getFloatExtra("walkDistance", 0f)
+        var walks = intent.getFloatExtra("walkDistance", 0f)
         val imagePath = intent.getStringExtra("imagePath")
         val summary = intent.getStringExtra("yourMood")
 
@@ -42,7 +43,9 @@ class StoreItemActivity: AppCompatActivity() {
         time.text = "$hour : $minute"
 
         var dist = findViewById<TextView>(R.id.distance)
-        dist.text = "$walks km"
+        val formattedDistance = String.format("%.2f", walks)
+        Log.d("이게 뭐누!! ", formattedDistance)
+        dist.text = "$formattedDistance km"
 
         var count = findViewById<TextView>(R.id.steps)
         count.text = "$steps 걸음"
