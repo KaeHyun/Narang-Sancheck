@@ -377,9 +377,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     val totalStepCount = if (dataSet.isEmpty) 0 else dataSet.dataPoints[0].getValue(
                         Field.FIELD_STEPS
                     ).asInt()
-                    stepEditText.setText(mockStepCount.toString() + "걸음")
+                    stepEditText.setText(totalStepCount.toString() + "걸음")
                     val intent = Intent(this@MainActivity, EndRunActivity::class.java)
-                    intent.putExtra(EndRunActivity.EXTRA_STEP_COUNT, mockStepCount)
+                    intent.putExtra(EndRunActivity.EXTRA_STEP_COUNT, totalStepCount)
                     //stepEditText.setText(totalStepCount.toString() + "걸음") // EditText에 발걸음 수 업데이트
                 }
                 .addOnFailureListener { exception ->

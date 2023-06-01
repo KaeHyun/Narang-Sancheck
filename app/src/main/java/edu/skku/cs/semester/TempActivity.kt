@@ -33,7 +33,8 @@ class TempActivity: AppCompatActivity() {
         time.text = "$hour : $minute"
 
         var dist = findViewById<TextView>(R.id.distance)
-        dist.text = "$walks km"
+        val formattedDistance = String.format("%.2f", walks)
+        dist.text = "$formattedDistance km"
 
         var count = findViewById<TextView>(R.id.steps)
         count.text = "$steps 걸음"

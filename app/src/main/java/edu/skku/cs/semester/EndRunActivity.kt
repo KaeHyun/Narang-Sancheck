@@ -51,7 +51,6 @@ class EndRunActivity: AppCompatActivity() {
 
         //걸음 수 가져오기
         val stepCount = intent.getIntExtra(EXTRA_STEP_COUNT, 0)
-
         val counted = findViewById<TextView>(R.id.step1)
         val stringCount = "$stepCount 걸음을 걸었어요."
         counted.text = stringCount

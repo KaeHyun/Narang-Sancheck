@@ -46,9 +46,9 @@
             app:layout_constraintBottom_toTopOf="@+id/mapImage"
             app:layout_constraintEnd_toEndOf="@+id/mapImage"
             app:layout_constraintTop_toTopOf="@+id/background"
-            android:layout_marginRight="24dp"
+            android:layout_marginRight="15sp"
             android:fontFamily="@font/shinb7regular_otf"
-            android:textSize="24sp"
+            android:textSize="15sp"
             />
         <ImageView
             android:id="@+id/frame"
@@ -85,7 +85,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="이럴수가"
-                android:textSize="22sp"
+                android:textSize="16sp"
                 android:fontFamily="@font/shinb7regular_otf"
                 android:layout_gravity="center_vertical"/>
             <ImageView
@@ -100,7 +100,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="이럴수가"
-                android:textSize="22sp"
+                android:textSize="16sp"
                 android:fontFamily="@font/shinb7regular_otf"
                 android:layout_gravity="center_vertical"/>
             <ImageView
@@ -115,7 +115,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="이럴수가"
-                android:textSize="22sp"
+                android:textSize="16sp"
                 android:fontFamily="@font/shinb7regular_otf"
                 android:layout_gravity="center_vertical"/>
         </LinearLayout>
@@ -126,7 +126,7 @@
             android:layout_marginBottom="15dp"
             android:fontFamily="@font/shinb7regular_otf"
             android:text="TextView"
-            android:textSize="28sp"
+            android:textSize="22sp"
             app:layout_constraintBottom_toBottomOf="@+id/background"
             app:layout_constraintEnd_toEndOf="@id/background"
             app:layout_constraintStart_toStartOf="@id/background"

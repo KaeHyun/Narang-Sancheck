@@ -7,6 +7,7 @@
     android:background="#F2F2F2">
 
 
+
     <ImageButton
         android:id="@+id/homeButton2"
         android:layout_width="0dp"
@@ -42,6 +43,56 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/homeButton2"
         app:layout_constraintTop_toTopOf="parent"/>
+
+    <LinearLayout
+        android:id="@+id/title_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/showRecycleView">
+
+    <ImageView
+        android:id="@+id/left_paw"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/paw"
+        android:rotation="65"
+        android:layout_marginTop="5dp"
+        app:layout_constraintTop_toTopOf="@+id/title_frame"
+        app:layout_constraintStart_toStartOf="@+id/title_frame"
+
+        />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="우리가 함께한 기록"
+        android:fontFamily="@font/font"
+        android:textStyle="bold"
+        android:textSize="28sp"
+        app:layout_constraintTop_toTopOf="@+id/title_frame"
+        app:layout_constraintStart_toEndOf="@+id/left_paw"
+        app:layout_constraintEnd_toStartOf="@+id/right_paw"
+        android:layout_marginTop="20dp"
+        android:layout_weight="1"/>
+    <ImageView
+        android:id="@+id/right_paw"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/paw"
+        android:rotation="45"
+        android:layout_marginTop="45dp"
+        app:layout_constraintStart_toEndOf="@+id/title"
+        app:layout_constraintEnd_toEndOf="@+id/title_frame"
+        app:layout_constraintTop_toTopOf="@+id/title_frame"
+        android:layout_marginRight="5dp"
+        android:scaleY="-1"
+        android:scaleX="-1"
+        />
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
