@@ -20,7 +20,7 @@ class StoreItemActivity: AppCompatActivity() {
 
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.store_item)
+        setContentView(R.layout.store_popup)
 
         // Intent로 전달된 데이터 받기
         val date = intent.getStringExtra("date")
@@ -50,12 +50,12 @@ class StoreItemActivity: AppCompatActivity() {
         var sum = findViewById<TextView>(R.id.contents)
         sum.text = summary
 
-        val backgroundImage = R.drawable.background
 
         val postBtn = findViewById<ImageButton>(R.id.postBtn) // 등록 버튼
         postBtn.setOnClickListener {
 
             val intent = Intent(this, StorageActivity::class.java)
+
             intent.putExtra("date", date)
             intent.putExtra("hour", hour)
             intent.putExtra("minute", minute)
@@ -63,7 +63,6 @@ class StoreItemActivity: AppCompatActivity() {
             intent.putExtra("yourMood", summary.toString()) // EditText의 입력값을 추가
             intent.putExtra("walkDistance", walks)
             intent.putExtra("imagePath", imagePath)
-            intent.putExtra("backgroundImage", backgroundImage)
 
             // MyDatabaseHelper 클래스의 인스턴스 생성
             val dbHelper = MyDatabaseHelper(this)
@@ -80,7 +79,6 @@ class StoreItemActivity: AppCompatActivity() {
                 put(MyDatabaseHelper.COLUMN_WALK_DISTANCE, walks)
                 put(MyDatabaseHelper.COLUMN_IMAGE_PATH, imagePath)
                 put(MyDatabaseHelper.COLUMN_MOOD, summary)
-                put(MyDatabaseHelper.COLUMN_BACKGROUND_IMAGE, backgroundImage)
             }
 
             // 데이터를 데이터베이스에 삽입
@@ -92,8 +90,17 @@ class StoreItemActivity: AppCompatActivity() {
             // Intent를 실행하여 StorageActivity로 이동
             startActivity(intent)
 
-            // Intent를 실행하여 StoreItemActivity로 이동
-            startActivity(intent)
+            val tempIntent = Intent(this, TempActivity::class.java)
+            // 데이터 전달을 위한 putExtra() 호출
+            tempIntent.putExtra("date", date)
+            tempIntent.putExtra("hour", hour)
+            tempIntent.putExtra("minute", minute)
+            tempIntent.putExtra("steps", steps)
+            tempIntent.putExtra("yourMood", summary.toString())
+            tempIntent.putExtra("walkDistance", walks)
+            tempIntent.putExtra("imagePath", imagePath)
+            // StoreItemActivity로 이동
+            startActivity(tempIntent)
 
 
         }

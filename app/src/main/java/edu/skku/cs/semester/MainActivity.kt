@@ -232,7 +232,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 pauseTime=SystemClock.elapsedRealtime() - chronometer.base
                 startBtn.isEnabled = true
                 stopBtn.isEnabled = false
-                resetBtn.isEnabled = false
+                resetBtn.isEnabled = true
                 running = false
             }
         }

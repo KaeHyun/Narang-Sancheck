@@ -19,7 +19,6 @@ class MyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
         const val COLUMN_WALK_DISTANCE = "walk_distance"
         const val COLUMN_IMAGE_PATH = "image_path"
         const val COLUMN_MOOD = "mood"
-        const val COLUMN_BACKGROUND_IMAGE = "background_image"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -31,9 +30,8 @@ class MyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
                 "$COLUMN_STEPS INTEGER," +
                 "$COLUMN_WALK_DISTANCE REAL," +
                 "$COLUMN_IMAGE_PATH TEXT," +
-                "$COLUMN_MOOD TEXT," +
-                "$COLUMN_BACKGROUND_IMAGE INTEGER" +
-                ")"
+                "$COLUMN_MOOD TEXT" + ")"
+
         db?.execSQL(createTableQuery)
     }
 

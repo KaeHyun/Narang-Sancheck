@@ -15,8 +15,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:textSize="30dp"
-        android:textStyle="bold
-"/>
+        android:textStyle="bold"
+        android:layout_marginTop="45dp"
+        android:fontFamily="@font/font"/>
 
     <ImageView
         android:id="@+id/route_image"
@@ -60,6 +61,7 @@
         android:text="x 시간 x 분"
         android:textSize="20dp"
         android:textStyle="bold"
+        android:fontFamily="@font/font"
         app:layout_constraintTop_toBottomOf="@id/todayDate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -72,6 +74,7 @@
         android:layout_height="wrap_content"
         android:text="xxx km"
         android:textSize="20sp"
+        android:fontFamily="@font/font"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/runtime"
         app:layout_constraintEnd_toEndOf="parent"
@@ -85,6 +88,7 @@
         android:layout_height="wrap_content"
         android:text="xxx 걸음"
         android:textSize="20sp"
+        android:fontFamily="@font/font"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/kilometer"
         app:layout_constraintEnd_toEndOf="parent"
@@ -97,6 +101,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="오늘의 산책을 요약해주세요 🐶"
+        android:fontFamily="@font/font"
         android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/step1"
