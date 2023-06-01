@@ -131,11 +131,13 @@
         android:id="@+id/step"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:layout_marginLeft="45dp"
+        android:layout_marginStart="44dp"
         android:layout_marginBottom="5dp"
         app:layout_constraintBottom_toTopOf="@+id/distance"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/start_button"
+        android:layout_marginTop="-20dp"
+
         app:srcCompat="@drawable/steps" />
 
     <TextView
@@ -147,6 +149,7 @@
         android:background="@null"
         android:textSize="30sp"
         android:text="0 걸음"
+        android:layout_marginTop="-20dp"
         android:fontFamily="@font/shinb7regular_otf"
         app:layout_constraintBottom_toTopOf="@id/distance_value"
         app:layout_constraintEnd_toEndOf="parent"
@@ -160,7 +163,7 @@
         app:layout_constraintBottom_toTopOf="@+id/end_run"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginLeft="45dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="20dp"
         app:srcCompat="@drawable/distance_text" />
 
     <TextView
@@ -172,7 +175,7 @@
         android:textSize="30sp"
         android:text="0.0 km"
         android:fontFamily="@font/shinb7regular_otf"
-        android:layout_marginBottom="15dp"
+        android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toTopOf="@id/end_run"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/distance" />

@@ -32,4 +32,13 @@
         app:layout_constraintWidth_percent="0.5"
         android:layout_marginStart="-2dp"
         android:layout_marginEnd="-4dp" />
+
+    <ListView
+        android:id="@+id/listView1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/homeButton2"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

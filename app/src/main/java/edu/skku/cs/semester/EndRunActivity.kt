@@ -58,7 +58,8 @@ class EndRunActivity: AppCompatActivity() {
         //이동 거리 받아오기
         val howLong = intent.getFloatExtra(EXTRA_DISTANCE, 0f)
         val kmText = findViewById<TextView>(R.id.kilometer)
-        val stringKm = "$howLong km를 달렸어요."
+        val formattedDistance = String.format("%.2f", howLong)
+        val stringKm = "$formattedDistance km를 달렸어요."
         kmText.text = stringKm
 
         val yourMoodEditText = findViewById<EditText>(R.id.yourMood)

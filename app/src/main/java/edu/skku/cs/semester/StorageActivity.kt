@@ -4,9 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageButton
+import android.widget.ListView
+import androidx.appcompat.app.AppCompatActivity
 
 
-class StorageActivity : Activity() {
+class StorageActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // PetInformationActivity의 동작 및 레이아웃 설정 등을 추가해주세요.
@@ -27,6 +30,15 @@ class StorageActivity : Activity() {
             startActivity(intent)
         }
 
+        // Intent로 전달된 데이터 받기
+        val date = intent.getStringExtra("date")
+        val hour= intent.getIntExtra("hour", 0)
+        val minute = intent.getIntExtra("minute", 0)
+        val steps  = intent.getIntExtra("steps", 0)
+        val walks = intent.getFloatExtra("walkDistance", 0f)
+        val imagePath = intent.getStringExtra("imagePath")
+        val summary = intent.getStringExtra("yourMood")
+        val backgroundImage = intent.getIntExtra("backgroundImage", R.drawable.background)
 
     }
 }
