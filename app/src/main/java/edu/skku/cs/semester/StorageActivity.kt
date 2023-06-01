@@ -51,8 +51,8 @@ class StorageActivity : AppCompatActivity() {
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         feedRecyclerView.layoutManager = layoutManager
 
-        // 데이터 리스트 생성
-        val feedItems = createFeedItems() // 피드 항목 리스트를 생성하는 함수 호출
+
+        val feedItems = getAllFeedItems() // 모든 피드 항목을 가져오는 함수 호출
 
         // 어댑터 생성 및 설정
         val adapter = FeedAdapter(feedItems)
@@ -60,22 +60,51 @@ class StorageActivity : AppCompatActivity() {
 
     }
 
-    private fun createFeedItems(): List<FeedItem> {
+    private fun getAllFeedItems(): List<FeedItem> {
         val feedItems = mutableListOf<FeedItem>()
 
-        val date = intent.getStringExtra("date")
-        val hour = intent.getIntExtra("hour", 0)
-        val minute = intent.getIntExtra("minute", 0)
-        val steps = intent.getIntExtra("steps", 0)
-        val walks = intent.getFloatExtra("walkDistance", 0f)
-        val imagePath = intent.getStringExtra("imagePath")
-        val summary = intent.getStringExtra("yourMood")
+        // SQLite 데이터베이스에서 데이터를 가져옴
+        val dbHelper = MyDatabaseHelper(this)
+        val db = dbHelper.readableDatabase
+        val projection = arrayOf(
+            MyDatabaseHelper.COLUMN_DATE,
+            MyDatabaseHelper.COLUMN_HOUR,
+            MyDatabaseHelper.COLUMN_MINUTE,
+            MyDatabaseHelper.COLUMN_STEPS,
+            MyDatabaseHelper.COLUMN_WALK_DISTANCE,
+            MyDatabaseHelper.COLUMN_IMAGE_PATH,
+            MyDatabaseHelper.COLUMN_MOOD
+        )
+        val cursor = db.query(
+            MyDatabaseHelper.TABLE_NAME,
+            projection,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
 
         // 데이터 리스트에 피드 항목 추가
-        val feedItem = FeedItem(date, hour, minute, steps, walks, imagePath, summary)
-        feedItems.add(feedItem)
+        with(cursor) {
+            while (moveToNext()) {
+                val date = getString(getColumnIndexOrThrow(MyDatabaseHelper.COLUMN_DATE))
+                val hour = getInt(getColumnIndexOrThrow(MyDatabaseHelper.COLUMN_HOUR))
+                val minute = getInt(getColumnIndexOrThrow(MyDatabaseHelper.COLUMN_MINUTE))
+                val steps = getInt(getColumnIndexOrThrow(MyDatabaseHelper.COLUMN_STEPS))
+                val walks = getFloat(getColumnIndexOrThrow(MyDatabaseHelper.COLUMN_WALK_DISTANCE))
+                val imagePath = getString(getColumnIndexOrThrow(MyDatabaseHelper.COLUMN_IMAGE_PATH))
+                val summary = getString(getColumnIndexOrThrow(MyDatabaseHelper.COLUMN_MOOD))
+
+                val feedItem = FeedItem(date, hour, minute, steps, walks, imagePath, summary)
+                feedItems.add(feedItem)
+            }
+        }
+
+        cursor.close()
+        db.close()
 
         return feedItems
-
     }
 }
+

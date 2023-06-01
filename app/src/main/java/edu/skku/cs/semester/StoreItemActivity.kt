@@ -103,9 +103,7 @@ class StoreItemActivity: AppCompatActivity() {
             tempIntent.putExtra("walkDistance", walks)
             tempIntent.putExtra("imagePath", imagePath)
             // StoreItemActivity로 이동
-            startActivity(tempIntent)
-
-
+            //startActivity(tempIntent)
         }
         val cancelBtn = findViewById<ImageButton>(R.id.cancelBtn) //취소 버튼
         cancelBtn.setOnClickListener {

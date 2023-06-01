@@ -26,6 +26,7 @@
         <activity android:name=".StorageActivity" />
         <activity android:name=".EndRunActivity"/>
         <activity android:name=".StoreItemActivity"/>
+        <activity android:name=".TempActivity"/>
 
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
