@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.Image
 import android.os.Bundle
+import android.util.Log
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -56,10 +57,13 @@ class EndRunActivity: AppCompatActivity() {
         counted.text = stringCount
 
         //이동 거리 받아오기
-        val howLong = intent.getFloatExtra(EXTRA_DISTANCE, 0f)
+        var howLong = intent.getFloatExtra(EXTRA_DISTANCE, 0f)
+        howLong /= 1000f
+//        Log.d("howLong", howLong.toString())
         val kmText = findViewById<TextView>(R.id.kilometer)
-//        val formattedDistance = String.format("%.2f", howLong)
-        val stringKm = "$howLong km를 달렸어요."
+        val formattedDistance = String.format("%.2f", howLong)
+//        Log.d("formatted Distance", formattedDistance)
+        val stringKm = "$formattedDistance km를 달렸어요."
         kmText.text = stringKm
 
         val yourMoodEditText = findViewById<EditText>(R.id.yourMood)

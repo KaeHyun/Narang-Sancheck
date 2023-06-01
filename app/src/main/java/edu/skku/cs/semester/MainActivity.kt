@@ -284,8 +284,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 intent.putExtra(EndRunActivity.EXTRA_PAUSE_TIME_HOURS, pauseHour)
                 intent.putExtra(EndRunActivity.EXTRA_PAUSE_TIME_MINUTES, pauseMinute)
                 intent.putExtra(EndRunActivity.EXTRA_DISTANCE, totalDistance)
-
-
+                Log.d("메인 액티비티에서!!!!!", totalDistance.toString())
                 startActivity(intent)
                 pauseTime=0L
             }
